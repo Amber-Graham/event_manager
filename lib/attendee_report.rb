@@ -1,9 +1,6 @@
 require 'csv'
 require 'erb'
-require 'date'
-require 'pry-byebug'
 
-require 'time'
 puts 'Attendee Report initialized'
 
 def execute_csv
@@ -12,6 +9,14 @@ def execute_csv
     headers: true,
     header_converters: :symbol
   )
+end
+
+def save_email(form_email)
+  filename = "output/attendee_report.html"
+
+  File.open(filename, 'w') do |file|
+    file.puts form_email
+  end
 end
 
 def reghour
@@ -42,5 +47,8 @@ def regday
   top_days.map { |k,v| "#{k}"}.flatten.join(', ')
 end
 
-puts "The top three times attendees signed-up for the conference was #{reghour}."
-puts "The top three times attendees signed-up for the conference was #{regday}."
+conference_email = File.read('event_report.erb')
+erb_template = ERB.new conference_email
+
+form_email = erb_template.result(binding)
+save_email(form_email)
